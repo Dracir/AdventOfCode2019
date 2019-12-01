@@ -11,17 +11,14 @@ public class AOCExecutor : MonoBehaviour
 	Task<string> Part1Task;
 	Task<string> Part2Task;
 	System.Diagnostics.Stopwatch Timer = new System.Diagnostics.Stopwatch();
-	
+
 
 	enum Status { Idle, RunningPart1, RunningPart2, Done };
 	private Status CurrentStatus;
 	void Start()
 	{
 		var currentDay = AOCUI.Instance.CurrentDay;
-		var input = AOCInput.GetInput(currentDay);
 		CreateTaskForDay(currentDay);
-		Part1Task = new Task<string>(() => Day1Main.Part1(input));
-		Part2Task = new Task<string>(() => Day1Main.Part2(input));
 		Part1Task.Start();
 		Timer.Start();
 		CurrentStatus = Status.RunningPart1;
@@ -29,8 +26,9 @@ public class AOCExecutor : MonoBehaviour
 
 	private void CreateTaskForDay(int currentDay)
 	{
-		
-		throw new NotImplementedException();
+		var input = AOCInput.GetInput(currentDay);
+		Part1Task = new Task<string>(() => Day1Main.Part1(input));
+		Part2Task = new Task<string>(() => Day1Main.Part2(input));
 	}
 
 	void Update()
