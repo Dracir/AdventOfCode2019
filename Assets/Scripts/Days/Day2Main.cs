@@ -17,6 +17,7 @@ public class Day2Main
 
 		return Compute(intcode, 0)[0] + "";
 	}
+	
 	public static int[] Compute(int[] intcode, int pointer)
 	{
 		while (intcode[pointer] != 99)

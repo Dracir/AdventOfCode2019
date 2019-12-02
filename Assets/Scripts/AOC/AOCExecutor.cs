@@ -21,7 +21,6 @@ public class AOCExecutor : MonoBehaviour
 		Part1Task.Start();
 		Timer.Start();
 		CurrentStatus = Status.RunningPart1;
-
 	}
 
 	private void CreateTaskForDay(int currentDay)
