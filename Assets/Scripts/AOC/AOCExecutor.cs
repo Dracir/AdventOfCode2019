@@ -12,7 +12,6 @@ public class AOCExecutor : MonoBehaviour
 	Task<string> Part2Task;
 	System.Diagnostics.Stopwatch Timer = new System.Diagnostics.Stopwatch();
 
-
 	enum Status { Idle, RunningPart1, RunningPart2, Done };
 	private Status CurrentStatus;
 	void Start()
@@ -22,20 +21,37 @@ public class AOCExecutor : MonoBehaviour
 		Part1Task.Start();
 		Timer.Start();
 		CurrentStatus = Status.RunningPart1;
+
 	}
 
 	private void CreateTaskForDay(int currentDay)
 	{
 		var input = AOCInput.GetInput(currentDay);
-		Part1Task = new Task<string>(() => Day1Main.Part1(input));
-		Part2Task = new Task<string>(() => Day1Main.Part2(input));
+		if (currentDay == 1)
+		{
+			CreateTask(() => Day1Main.Part1(input), () => Day1Main.Part2(input));
+			Day1Main.StartPart1ComputeShader(input);
+
+		}
+		else if (currentDay == 2)
+			CreateTask(() => Day2Main.Part1(input), () => Day2Main.Part2(input));
+	}
+
+	private void CreateTask(Func<string> part1, Func<string> part2)
+	{
+		Part1Task = new Task<string>(part1);
+		Part2Task = new Task<string>(part2);
 	}
 
 	void Update()
 	{
+		CheckThreadedExecution();
+	}
+
+	private void CheckThreadedExecution()
+	{
 		switch (CurrentStatus)
 		{
-
 			case Status.RunningPart1:
 				if (Part1Task.IsCompleted)
 					MoveToTask2();
@@ -55,21 +71,20 @@ public class AOCExecutor : MonoBehaviour
 					Done();
 				}
 				break;
-
 		}
 	}
 
 	private void Done()
 	{
 		CurrentStatus = Status.Done;
-		Debug.Log(Part2Task.Result + " in " + Timer.Elapsed.ToString("mm\\:ss"));
+		Debug.Log($"Part 2 result : {Part2Task.Result} . Done in {Timer.Elapsed.ToString("mm\\:ss")}");
 		Debug.Log("Done ! :D");
 	}
 
 	private void MoveToTask2()
 	{
 		Timer.Stop();
-		Debug.Log(Part1Task.Result + " in " + Timer.Elapsed.ToString("mm\\:ss"));
+		Debug.Log($"Part 2 result : {Part1Task.Result} . Done in {Timer.Elapsed.ToString("mm\\:ss")}");
 		Part1Task.Dispose();
 		CurrentStatus = Status.RunningPart2;
 		Part2Task.Start();

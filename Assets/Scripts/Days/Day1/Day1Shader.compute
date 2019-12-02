@@ -1,0 +1,14 @@
+﻿#pragma kernel Day1Main
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+//RWTexture2D<float4> Result;
+Texture2D<float4> Input;
+RWTexture2D<float4> Result;
+
+[numthreads(16,1,1)]
+void Day1Main (uint3 id : SV_DispatchThreadID)
+{
+    //Result[id.x] = Input[id.xy];
+    Result[id.xy] = (Input[id.xy] / 3) - 2;
+}

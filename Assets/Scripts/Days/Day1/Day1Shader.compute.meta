@@ -1,7 +1,8 @@
 fileFormatVersion: 2
-guid: c9d495a24a363484ab55c67df621d33a
-TextScriptImporter:
+guid: 0767224c90e5e944194147bf2a98fbfc
+ComputeShaderImporter:
   externalObjects: {}
+  currentAPIMask: 4
   userData: 
   assetBundleName: 
   assetBundleVariant: 

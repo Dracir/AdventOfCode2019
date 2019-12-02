@@ -12,6 +12,8 @@ public class AOCUI : Singleton<AOCUI>
 	public Text DayText;
 	public Image Star1;
 	public Image Star2;
+	public RawImage Part1ComputeInput;
+	public RawImage Part1ComputeOutput;
 
 	[Header("Stuff")]
 	[Range(1, 25)]
