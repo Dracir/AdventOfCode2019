@@ -77,17 +77,17 @@ public class AOCExecutor : MonoBehaviour
 	private void Done()
 	{
 		CurrentStatus = Status.Done;
-		Debug.Log($"Part 2 result : {Part2Task.Result} . Done in {Timer.Elapsed.ToString("mm\\:ss")}");
+		Debug.Log($"Part 2 result : {Part2Task.Result} . Done in {Timer.Elapsed.ToString("mm\\m\\ ss\\s\\ ffff\\m\\s")}");
 		Debug.Log("Done ! :D");
 	}
 
 	private void MoveToTask2()
 	{
 		Timer.Stop();
-		Debug.Log($"Part 2 result : {Part1Task.Result} . Done in {Timer.Elapsed.ToString("mm\\:ss")}");
+		Debug.Log($"Part 1 result : {Part1Task.Result} . Done in {Timer.Elapsed.ToString("mm\\m\\ ss\\s\\ ffff\\m\\s")}");
 		Part1Task.Dispose();
 		CurrentStatus = Status.RunningPart2;
-		Part2Task.Start();
 		Timer.Restart();
+		Part2Task.Start();
 	}
 }
