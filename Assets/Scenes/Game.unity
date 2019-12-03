@@ -953,7 +953,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Day 2
+  m_Text: Day 3
 --- !u!222 &1454495851
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1171,7 +1171,7 @@ MonoBehaviour:
   Star2: {fileID: 1418470129}
   Part1ComputeInput: {fileID: 341023962}
   Part1ComputeOutput: {fileID: 442349998}
-  CurrentDay: 2
+  CurrentDay: 3
 --- !u!1 &1746900859
 GameObject:
   m_ObjectHideFlags: 0
