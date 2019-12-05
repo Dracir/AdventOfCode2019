@@ -28,7 +28,7 @@ public static class TestUtility
 			}
 	}
 
-	public static void AreEquals(int[] expected, int[] actual)
+	public static void AreEqual(int[] expected, int[] actual)
 	{
 
 		if (expected.Length != actual.Length)

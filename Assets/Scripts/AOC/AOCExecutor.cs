@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using System.Linq;
+using System.Collections.Concurrent;
 
 public class AOCExecutor : MonoBehaviour
 {
+	public static ConcurrentQueue<Action> ActionForMain = new ConcurrentQueue<Action>();
 
 	Task<string> Part1Task;
 	Task<string> Part2Task;
@@ -38,6 +40,8 @@ public class AOCExecutor : MonoBehaviour
 			CreateTask(() => Day3Main.Part1(input) + "", () => Day3Main.Part2(input) + "");
 		else if (currentDay == 4)
 			CreateTask(() => Day4Main.Part1(input) + "", () => Day4Main.Part2(input) + "");
+		else if (currentDay == 5)
+			CreateTask(() => Day5Main.Part1(input) + "", () => Day5Main.Part2(input) + "");
 	}
 
 	private void CreateTask(Func<string> part1, Func<string> part2)
@@ -49,6 +53,9 @@ public class AOCExecutor : MonoBehaviour
 	void Update()
 	{
 		CheckThreadedExecution();
+		Action action = null;
+		while (ActionForMain.TryDequeue(out action))
+			action();
 	}
 
 	private void CheckThreadedExecution()
