@@ -42,6 +42,8 @@ public class AOCExecutor : MonoBehaviour
 			CreateTask(() => Day4Main.Part1(input) + "", () => Day4Main.Part2(input) + "");
 		else if (currentDay == 5)
 			CreateTask(() => Day5Main.Part1(input) + "", () => Day5Main.Part2(input) + "");
+		else if (currentDay == 6)
+			CreateTask(() => Day6Main.Part1(input) + "", () => Day6Main.Part2(input) + "");
 	}
 
 	private void CreateTask(Func<string> part1, Func<string> part2)

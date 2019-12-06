@@ -33,10 +33,10 @@ public struct IntCodeProgram
 	public bool IsParameterCInPositionMode => InstructionParameterCInPositionMode(Memory[Pointer + 0]);
 	public bool IsParameterDInPositionMode => InstructionParameterDInPositionMode(Memory[Pointer + 0]);
 
-	public static bool InstructionParameterAInPositionMode(int instruction) => !new Regex(@"^.*1..$").IsMatch(instruction.ToString());
-	public static bool InstructionParameterBInPositionMode(int instruction) => !new Regex(@"^.*1...$").IsMatch(instruction.ToString());
-	public static bool InstructionParameterCInPositionMode(int instruction) => !new Regex(@"^.*1....$").IsMatch(instruction.ToString());
-	public static bool InstructionParameterDInPositionMode(int instruction) => !new Regex(@"^.*1.....$").IsMatch(instruction.ToString());
+	public static bool InstructionParameterAInPositionMode(int instruction) => instruction / 100 % 10 == 0;
+	public static bool InstructionParameterBInPositionMode(int instruction) => instruction / 1000 % 10 == 0;
+	public static bool InstructionParameterCInPositionMode(int instruction) => instruction / 10000 % 10 == 0;
+	public static bool InstructionParameterDInPositionMode(int instruction) => instruction / 100000 % 10 == 0;
 
 	public IntCodeProgram(int[] memory, int pointer)
 	{
