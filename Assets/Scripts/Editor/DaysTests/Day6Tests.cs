@@ -8,21 +8,33 @@ namespace Tests
 {
     public class Day6Tests
     {
-        // A Test behaves as an ordinary method
         [Test]
-        public void Day6TestsSimplePasses()
+        public void Exemple1()
         {
-            // Use the Assert class to test conditions
+			var input = "COM)B\nB)C\nC)D\nD)E\nE)F\nB)G\nG)H\nD)I\nE)J\nJ)K\nK)L";
+			Assert.AreEqual(42,Day6Main.Part1(input));
+        }
+		
+		[Test]
+        public void SingleNode()
+        {
+			var input = "COM)B";
+			Assert.AreEqual(1,Day6Main.Part1(input));
+        }
+		
+		[Test]
+        public void SingleLineNode()
+        {
+			var input = "COM)A\nA)B";
+			Assert.AreEqual(3,Day6Main.Part1(input));
         }
 
-        // A UnityTest behaves like a coroutine in Play Mode. In Edit Mode you can use
-        // `yield return null;` to skip a frame.
-        [UnityTest]
-        public IEnumerator Day6TestsWithEnumeratorPasses()
+		[Test]
+        public void DualChilds()
         {
-            // Use the Assert class to test conditions.
-            // Use yield to skip a frame.
-            yield return null;
+			var input = "COM)A\nCOM)B";
+			Assert.AreEqual(2,Day6Main.Part1(input));
         }
+
     }
 }

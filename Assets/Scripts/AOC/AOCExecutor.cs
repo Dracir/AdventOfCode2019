@@ -8,7 +8,7 @@ using System.Collections.Concurrent;
 
 public class AOCExecutor : MonoBehaviour
 {
-	public static ConcurrentQueue<Action> ActionForMain = new ConcurrentQueue<Action>();
+	public static readonly ConcurrentQueue<Action> ActionForMain = new ConcurrentQueue<Action>();
 
 	Task<string> Part1Task;
 	Task<string> Part2Task;
@@ -55,9 +55,11 @@ public class AOCExecutor : MonoBehaviour
 	void Update()
 	{
 		CheckThreadedExecution();
-		Action action = null;
+		Action action;
 		while (ActionForMain.TryDequeue(out action))
+		{
 			action();
+		}
 	}
 
 	private void CheckThreadedExecution()
