@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class IntCodeCompiler
 {
@@ -9,13 +10,21 @@ public class IntCodeCompiler
 	public Func<IntCodeProgram, IntCodeProgram>[] Instructions = new Func<IntCodeProgram, IntCodeProgram>[100];
 	public int[] InstructionsSkips = new int[] { 1, 4, 4, 2, 2, 3, 3, 4, 4 };
 
-	public int InputValue = 0;
+	public IEnumerator<int> InputValue;
 
 	public string OutputValue = "";
+	public bool PauseOnOutput;
+	public bool Paused;
 
-	public IntCodeCompiler(int inputValue = 0)
+
+	public IntCodeCompiler(int inputValue, bool pauseOnOutput = false) : this(new int[] { inputValue }, pauseOnOutput)
+	{ }
+
+	public IntCodeCompiler(IEnumerable<int> inputValue = null, bool pauseOnOutput = false)
 	{
-		InputValue = inputValue;
+		PauseOnOutput = pauseOnOutput;
+		if (inputValue != null)
+			InputValue = inputValue.GetEnumerator();
 
 		Instructions[1] = Add;
 		Instructions[2] = Multiply;
@@ -25,6 +34,17 @@ public class IntCodeCompiler
 		Instructions[6] = JumpIfFalse;
 		Instructions[7] = LessThan;
 		Instructions[8] = Equals;
+	}
+
+
+	public void Clear()
+	{
+		OutputValue = "";
+	}
+
+	public void SetInputs(int[] inputs)
+	{
+		InputValue = inputs.ToList().GetEnumerator();
 	}
 
 	public static int[] Compute(int[] memory, int startingPointer = 0)
@@ -58,13 +78,19 @@ public class IntCodeCompiler
 
 	private IntCodeProgram Input(IntCodeProgram program)
 	{
-		program.Memory[program.ParameterAPosition] = InputValue;
+		if (!InputValue.MoveNext())
+			Debug.Log("jai pu de input!" + InputValue.Current);
+		//else
+		//	Debug.Log("input : " + InputValue.Current);
+		program.Memory[program.ParameterAPosition] = InputValue.Current;
 		return new IntCodeProgram(program.Memory, program.Pointer + 2);
 	}
 
 	private IntCodeProgram Output(IntCodeProgram program)
 	{
-		OutputValue += program.Memory[program.ParameterAPosition] + "";
+		OutputValue += program.ParameterAValue + "";
+		if (PauseOnOutput)
+			Paused = true;
 		return new IntCodeProgram(program.Memory, program.Pointer + 2);
 	}
 
@@ -103,13 +129,15 @@ public class IntCodeCompiler
 
 	public IntCodeProgram Compute(IntCodeProgram program)
 	{
-		while (!program.IsDone)
+		Paused = false;
+		while (!program.IsDone && !Paused)
 			program = ComputeStep(program);
 		return program;
 	}
 
 	public IntCodeProgram ComputeStep(IntCodeProgram program)
 	{
+		Paused = false;
 		if (program.IsDone)
 			return program;
 		var instruction = program.OpCodeAtPointer % 100;
