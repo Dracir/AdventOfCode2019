@@ -19,7 +19,7 @@ public static class InputParser
 	public static Tree ReadTree(string input, char lineSeparator, char linkSeparator)
 	{
 		var outputNodes = new List<TreeNode>();
-		outputNodes.Add(new TreeNode("COM"));
+		var comNode = new TreeNode("COM");
 
 		var nodeDick = new Dictionary<string, TreeNode>();
 		var links = input.Split(lineSeparator).Select(x =>
@@ -28,7 +28,10 @@ public static class InputParser
 			return (split[0], split[1]);
 		}).ToList();
 
-		Debug.Log(string.Join(",", links.Select(x => x.Item1 + " ) " + x.Item2).ToArray()));
+		outputNodes.Add(comNode);
+		nodeDick.Add("COM", comNode);
+
+		//Debug.Log(string.Join(",", links.Select(x => x.Item1 + " ) " + x.Item2).ToArray()));
 		foreach (var link in links)
 		{
 			var node = new TreeNode(link.Item2);
@@ -36,74 +39,30 @@ public static class InputParser
 			nodeDick.Add(link.Item2, node);
 		}
 
-		foreach (var item in nodeDick)
-			Debug.Log($"Key: {item.Key}, Value: {item.Value}");
+		//foreach (var item in nodeDick)
+		//	Debug.Log($"Key: {item.Key}, Value: {item.Value}");
 
-		Debug.Log(string.Join(",", outputNodes.Select(x => x.Name).ToArray()));
+		//Debug.Log(string.Join(",", outputNodes.Select(x => x.Name).ToArray()));
 
 		foreach (var link in links)
 		{
 			var parentId = link.Item1;
-			if (nodeDick.ContainsKey(parentId))
+			if (!nodeDick.ContainsKey(parentId))
 			{
-				Debug.Log($"Unknown item {parentId}");
+				//Debug.Log($"Unknown item {parentId}");
 				continue;
 			}
-			else
-				Debug.Log($"trouvé item{parentId}");
+			//else
+				//Debug.Log($"Trouvé item {parentId}");
 
-			Debug.Log(string.Join(",", nodeDick.Select(x => x.Key).ToArray()));
-			var parent = nodeDick[link.Item1];
+			//Debug.Log(string.Join(",", nodeDick.Select(x => x.Key).ToArray()));
+			var parent = nodeDick[parentId];
 			var child = nodeDick[link.Item2];
 			child.Parent = parent;
-			parent.Childrend.Add(child);
+			parent.Children.Add(child);
 		}
 
-		/*
-
-		foreach (var link in remainingNodesToParse)
-			links.Add(link.Item2, link.Item1);
-
-		int a = links.Count;
-
-		AOCExecutor.ActionForMain.Enqueue(() => Debug.Log($"Nodes : {a}."));
-
-		int changes = 1;
-		while (links.Count != 0 && changes > 0)
-		{
-			var stuff = outputNodes.Keys.ToArray();
-			int nbOutputs = outputNodes.Count();
-			var has4FT = outputNodes.ContainsKey("4FT");
-			var nbneed4FT = links.Where(x => x.Value == "4FT").Count();
-			AOCExecutor.ActionForMain.Enqueue(() => Debug.Log($"nbOutputs {nbOutputs} " + string.Join(",", stuff) + " - " + nbneed4FT));
-			AOCExecutor.ActionForMain.Enqueue(() => Debug.Log($"needs 4ft: {links.Where(x => x.Value == "4FT").Count()}  exists {has4FT}."));
-			changes = 0;
-			foreach (var link in links.Where(x => outputNodes.ContainsKey(x.Value)).ToArray())
-			{
-				changes++;
-				AOCExecutor.ActionForMain.Enqueue(() => Debug.Log($"Adding {link.Key}."));
-				TreeNode parentNode = outputNodes[link.Value];
-				TreeNode childNode = new TreeNode(link.Key);
-
-				childNode.Parent = parentNode;
-				parentNode.Childrend.Add(childNode);
-				outputNodes.Add(link.Key, childNode);
-				var containnew = outputNodes.ContainsKey(link.Key);
-				AOCExecutor.ActionForMain.Enqueue(() => Debug.Log($"contain new key {link.Key} {containnew}."));
-				links.Remove(link.Key);
-			}
-			int count = links.Count;
-			int change = changes;
-			AOCExecutor.ActionForMain.Enqueue(() => Debug.Log($"Remaining Nodes : {count} with {change} changes."));
-		}
-
-
-		AOCExecutor.ActionForMain.Enqueue(() => Debug.Log($"Remaining Nodes : {links.Count}"));*/
-
-
-		var firstNode = outputNodes.First(x => x.Name == "COM");
-
-		return new Tree(null, firstNode);
+		return new Tree(nodeDick, comNode);
 	}
 
 
@@ -123,7 +82,7 @@ public static class InputParser
 	{
 		public string Name;
 		public TreeNode Parent;
-		public List<TreeNode> Childrend = new List<TreeNode>();
+		public List<TreeNode> Children = new List<TreeNode>();
 
 		public TreeNode(string name)
 		{

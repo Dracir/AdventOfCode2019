@@ -73,6 +73,7 @@ public class Day7Main
 		{
 			var compiler = compilers[i];
 			var program = programs[i];
+			Debug.Log($"(First Pass)Running Amp {i} at pointer {program.Pointer} with input {input}");
 			compiler.Clear();
 			compiler.SetInputs(new int[] { phases[i], input });
 			programs[i] = compiler.Compute(program);
@@ -86,8 +87,9 @@ public class Day7Main
 			{
 				var compiler = compilers[i];
 				var program = programs[i];
+				Debug.Log($"Running Amp {i} at pointer {program.Pointer} with input {input}");
 				compiler.Clear();
-				compiler.SetInputs(new int[] { input, input });
+				compiler.SetInputs(new int[] { input });
 				programs[i] = compiler.Compute(program);
 				if (!string.IsNullOrEmpty(compiler.OutputValue))
 					input = int.Parse(compiler.OutputValue);

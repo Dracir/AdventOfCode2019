@@ -33,7 +33,7 @@ public class AOCUI : Singleton<AOCUI>
 	private void UpdateUI()
 	{
 		DayText.text = $"Day {CurrentDay}";
-		var score = AOCScore.Instance.Scores[CurrentDay - 1];
+		var score = AOCScore.Instance.Scores[CurrentDay];
 		switch (score)
 		{
 			case AOCScore.DayScore.NoStar:
