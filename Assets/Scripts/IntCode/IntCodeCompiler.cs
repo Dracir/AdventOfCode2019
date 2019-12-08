@@ -10,7 +10,8 @@ public class IntCodeCompiler
 	public Func<IntCodeProgram, IntCodeProgram>[] Instructions = new Func<IntCodeProgram, IntCodeProgram>[100];
 	public int[] InstructionsSkips = new int[] { 1, 4, 4, 2, 2, 3, 3, 4, 4 };
 
-	public IEnumerator<int> InputValue;
+	public int[] InputValue;
+	private int InputPointer = -1;
 
 	public string OutputValue = "";
 	public bool PauseOnOutput;
@@ -20,11 +21,12 @@ public class IntCodeCompiler
 	public IntCodeCompiler(int inputValue, bool pauseOnOutput = false) : this(new int[] { inputValue }, pauseOnOutput)
 	{ }
 
-	public IntCodeCompiler(IEnumerable<int> inputValue = null, bool pauseOnOutput = false)
+	public IntCodeCompiler(int[] inputValue = null, bool pauseOnOutput = false)
 	{
 		PauseOnOutput = pauseOnOutput;
 		if (inputValue != null)
-			InputValue = inputValue.GetEnumerator();
+			InputValue = inputValue;
+		InputPointer = -1;
 
 		Instructions[1] = Add;
 		Instructions[2] = Multiply;
@@ -44,7 +46,8 @@ public class IntCodeCompiler
 
 	public void SetInputs(int[] inputs)
 	{
-		InputValue = inputs.ToList().GetEnumerator();
+		InputValue = inputs.ToArray();
+		InputPointer = -1;
 	}
 
 	public static int[] Compute(int[] memory, int startingPointer = 0)
@@ -78,12 +81,17 @@ public class IntCodeCompiler
 
 	private IntCodeProgram Input(IntCodeProgram program)
 	{
-		if (!InputValue.MoveNext())
-			Debug.Log("jai pu de input!" + InputValue.Current);
-		//else
-		//	Debug.Log("input : " + InputValue.Current);
-		program.Memory[program.ParameterAPosition] = InputValue.Current;
+		int input = NextInput();
+		program.Memory[program.ParameterAPosition] = input;
 		return new IntCodeProgram(program.Memory, program.Pointer + 2);
+	}
+
+	private int NextInput()
+	{
+		if (InputPointer < InputValue.Count())
+			InputPointer++;
+		var input = InputValue[InputPointer];
+		return input;
 	}
 
 	private IntCodeProgram Output(IntCodeProgram program)

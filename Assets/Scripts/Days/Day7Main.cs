@@ -75,22 +75,22 @@ public class Day7Main
 			var program = programs[i];
 			compiler.Clear();
 			compiler.SetInputs(new int[] { phases[i], input });
-			compiler.Compute(program);
+			programs[i] = compiler.Compute(program);
 			input = int.Parse(compiler.OutputValue);
 		}
 
-		int maxLoops = 9999999;
+		int maxLoops = 20;
 		while (!programs.Last().IsDone && maxLoops-- > 0)
 		{
 			for (int i = 0; i < compilers.Length; i++)
 			{
-				//Debug.Log("Next Amp " + i);
 				var compiler = compilers[i];
 				var program = programs[i];
 				compiler.Clear();
 				compiler.SetInputs(new int[] { input, input });
-				compiler.Compute(program);
-				input = int.Parse(compiler.OutputValue);
+				programs[i] = compiler.Compute(program);
+				if (!string.IsNullOrEmpty(compiler.OutputValue))
+					input = int.Parse(compiler.OutputValue);
 			}
 		}
 

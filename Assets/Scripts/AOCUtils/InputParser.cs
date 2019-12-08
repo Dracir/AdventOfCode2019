@@ -21,27 +21,40 @@ public static class InputParser
 		var outputNodes = new List<TreeNode>();
 		outputNodes.Add(new TreeNode("COM"));
 
-		//Dictionary<string, string> links = new Dictionary<string, string>();
+		var nodeDick = new Dictionary<string, TreeNode>();
 		var links = input.Split(lineSeparator).Select(x =>
 		{
 			var split = x.Split(linkSeparator);
 			return (split[0], split[1]);
-		})
-		.ToList();
+		}).ToList();
 
+		Debug.Log(string.Join(",", links.Select(x => x.Item1 + " ) " + x.Item2).ToArray()));
 		foreach (var link in links)
-			outputNodes.Add(new TreeNode(link.Item2));
+		{
+			var node = new TreeNode(link.Item2);
+			outputNodes.Add(node);
+			nodeDick.Add(link.Item2, node);
+		}
+
+		foreach (var item in nodeDick)
+			Debug.Log($"Key: {item.Key}, Value: {item.Value}");
+
+		Debug.Log(string.Join(",", outputNodes.Select(x => x.Name).ToArray()));
 
 		foreach (var link in links)
 		{
-			if (!outputNodes.Any(x => x.Name == link.Item1))
+			var parentId = link.Item1;
+			if (nodeDick.ContainsKey(parentId))
 			{
-				AOCExecutor.ActionForMain.Enqueue(() => Debug.Log($"Unknown parent{link.Item1}"));
+				Debug.Log($"Unknown item {parentId}");
 				continue;
 			}
+			else
+				Debug.Log($"trouvé item{parentId}");
 
-			var parent = outputNodes.First(x => x.Name == link.Item1);
-			var child = outputNodes.First(x => x.Name == link.Item2);
+			Debug.Log(string.Join(",", nodeDick.Select(x => x.Key).ToArray()));
+			var parent = nodeDick[link.Item1];
+			var child = nodeDick[link.Item2];
 			child.Parent = parent;
 			parent.Childrend.Add(child);
 		}
