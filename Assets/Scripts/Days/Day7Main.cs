@@ -7,17 +7,17 @@ using System;
 public class Day7Main
 {
 
-	public static int Part1(string inputText) => Run(inputText, RunSequenceWithFeedbackLoop, new int[] { 0, 1, 2, 3, 4 });
-	public static int Part2(string inputText) => Run(inputText, RunSequenceWithFeedbackLoop, new int[] { 5, 6, 7, 8, 9 });
+	public static long Part1(string inputText) => Run(inputText, RunSequence, new long[] { 0, 1, 2, 3, 4 });
+	public static long Part2(string inputText) => Run(inputText, RunSequenceWithFeedbackLoop, new long[] { 5, 6, 7, 8, 9 });
 
-	public static int Run(string inputText, Func<int[], int[], int> sequenceRunner, int[] phases)
+	public static long Run(string inputText, Func<long[], long[], long> sequenceRunner, long[] phases)
 	{
-		var intcode = InputParser.ListOfInts(inputText, ',');
-		int max = 0;
+		var intcode = InputParser.ListOfLongs(inputText, ',');
+		long max = 0;
 		foreach (var phase in GetPermutations(phases, 5))
 		{
 			var value = sequenceRunner(intcode.ToArray(), phase.ToArray());
-			max = Mathf.Max(value, max);
+			max = Math.Max(value, max);
 		}
 		return max;
 	}
@@ -31,17 +31,17 @@ public class Day7Main
 	}
 
 
-	public static int RunSequence(int[] intcode, int[] phases)
+	public static long RunSequence(long[] intcode, long[] phases)
 	{
 		var compiler = new IntCodeCompiler();
-		int input = 0;
+		long input = 0;
 		foreach (var phase in phases)
 		{
 			compiler.Clear();
-			compiler.SetInputs(new int[] { phase, input });
+			compiler.SetInputs(new long[] { phase, input });
 			var program = new IntCodeProgram(intcode.ToArray(), 0);
 			compiler.Compute(program);
-			input = int.Parse(compiler.OutputValue);
+			input = compiler.OutputValue;
 		}
 
 		return input;
@@ -49,7 +49,7 @@ public class Day7Main
 
 
 
-	public static int RunSequenceWithFeedbackLoop(int[] intcode, int[] phases)
+	public static long RunSequenceWithFeedbackLoop(long[] intcode, long[] phases)
 	{
 		var compilers = new IntCodeCompiler[]{
 			new IntCodeCompiler(phases[0], true),
@@ -68,16 +68,16 @@ public class Day7Main
 		};
 
 
-		int input = 0;
+		long input = 0;
 		for (int i = 0; i < compilers.Length; i++)
 		{
 			var compiler = compilers[i];
 			var program = programs[i];
 			Debug.Log($"(First Pass)Running Amp {i} at pointer {program.Pointer} with input {input}");
 			compiler.Clear();
-			compiler.SetInputs(new int[] { phases[i], input });
+			compiler.SetInputs(new long[] { phases[i], input });
 			programs[i] = compiler.Compute(program);
-			input = int.Parse(compiler.OutputValue);
+			input = compiler.OutputValue;
 		}
 
 		int maxLoops = 20;
@@ -89,10 +89,9 @@ public class Day7Main
 				var program = programs[i];
 				Debug.Log($"Running Amp {i} at pointer {program.Pointer} with input {input}");
 				compiler.Clear();
-				compiler.SetInputs(new int[] { input });
+				compiler.SetInputs(new long[] { input });
 				programs[i] = compiler.Compute(program);
-				if (!string.IsNullOrEmpty(compiler.OutputValue))
-					input = int.Parse(compiler.OutputValue);
+				input = compiler.OutputValue;
 			}
 		}
 

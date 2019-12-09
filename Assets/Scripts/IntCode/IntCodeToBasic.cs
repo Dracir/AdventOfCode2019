@@ -1,17 +1,18 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class IntCodeToBasic
 {
-	public static void Convert(IntCodeProgram program)
+	public static void Convert(IntCodeProgram program, string filename)
 	{
 		var compiler = new IntCodeCompiler();
 		string output = "";
-		int pointer = 0;
-		while (pointer < program.Memory.Length)
+		long pointer = 0;
+		while (pointer < program.MemoryLength)
 		{
-			var instruction = program.Memory[pointer];
+			var instruction = program[pointer];
 			var opcode = instruction % 100;
 			if (opcode == 99)
 			{
@@ -29,10 +30,16 @@ public class IntCodeToBasic
 				pointer += compiler.InstructionsSkips[opcode];
 			}
 		}
-		AOCExecutor.ActionForMain.Enqueue(() => AOCInput.WriteToFile("D5Part1HumainCode.txt", output));
+		if (Application.isPlaying)
+			AOCExecutor.ActionForMain.Enqueue(() => AOCInput.WriteToFile(filename, output));
+		else
+			AOCInput.WriteToFile(filename, output);
 	}
 
-	public static void ConvertWhileRunning(IntCodeCompiler intCodeCompiler, IntCodeProgram program)
+	public static void ConvertWhileRunning(long[] intcode, string filename, bool useExecutorActionForMain) 
+		=> ConvertWhileRunning(new IntCodeCompiler(), new IntCodeProgram(intcode, 0), filename, useExecutorActionForMain);
+		
+	public static void ConvertWhileRunning(IntCodeCompiler intCodeCompiler, IntCodeProgram program, string filename, bool useExecutorActionForMain)
 	{
 		string output = "";
 		int maxSteps = 100;
@@ -57,34 +64,26 @@ public class IntCodeToBasic
 			}
 
 		}
-		AOCExecutor.ActionForMain.Enqueue(() => AOCInput.WriteToFile("D5Part2HumainCode.txt", output));
+
+		if (useExecutorActionForMain)
+			AOCExecutor.ActionForMain.Enqueue(() => AOCInput.WriteToFile(filename, output));
+		else
+			AOCInput.WriteToFile(filename, output);
 
 	}
 
-	private static string InstructionToCode(IntCodeProgram program, int instruction, int opcode, int pointer)
+	private static string InstructionToCode(IntCodeProgram program, long instruction, long opcode, long pointer)
 	{
 		var output = "";
-		var aValue = "Error";
-		var a = 0;
-		if (pointer + 1 < program.Memory.Length)
-		{
-			a = program.Memory[pointer + 1];
-			aValue = IntCodeProgram.InstructionParameterAInPositionMode(instruction) ? $"[{a}]" : $"{a}";
-		}
-		var bValue = "Error";
-		var b = 0;
-		if (pointer + 2 < program.Memory.Length)
-		{
-			b = program.Memory[pointer + 2];
-			bValue = IntCodeProgram.InstructionParameterBInPositionMode(instruction) ? $"[{b}]" : $"{b}";
-		}
-		var cValue = "Error";
-		var c = 0;
-		if (pointer + 3 < program.Memory.Length)
-		{
-			c = program.Memory[pointer + 3];
-			cValue = IntCodeProgram.InstructionParameterCInPositionMode(instruction) ? $"[{c}]" : $"{c}";
-		}
+
+		long a = program.ParameterA;
+		var aValue = GetParamValue(program, instruction, a, 0);
+
+		long b = program.ParameterA;
+		var bValue = GetParamValue(program, instruction, b, 1);
+
+		long c = program.ParameterA;
+		var cValue = GetParamValue(program, instruction, c, 2);
 
 		if (opcode == 1)
 			return $"[{c}] = {aValue} + {bValue}\n";
@@ -102,7 +101,22 @@ public class IntCodeToBasic
 			return $"[{c}] = ({aValue} < {bValue}) ? 1 : 0\n";
 		else if (opcode == 8)
 			return $"[{c}] = ({aValue} == {bValue}) ? 1 : 0\n";
+		else if (opcode == 9)
+			return $"RelativeBase = {program.RelativeBaseOffset} + {aValue}\n";
 
 		return output;
+	}
+
+	private static string GetParamValue(IntCodeProgram program, long instruction, long value, int param)
+	{
+		var mode = IntCodeProgram.OcodeParameterMode(instruction, param);
+		switch (mode)
+		{
+			case ParameterMode.Position: return $"[{value}]";
+			case ParameterMode.Immediate: return $"{value}";
+			case ParameterMode.Relative: return $"[{value} + {program.RelativeBaseOffset}]";
+			default: return "";
+		}
+
 	}
 }

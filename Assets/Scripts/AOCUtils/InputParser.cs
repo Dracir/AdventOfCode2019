@@ -7,7 +7,10 @@ using System;
 public static class InputParser
 {
 	public static int[] ListOfInts(string input) => input.Split('\n').Select(x => int.Parse(x)).ToArray();
+	public static int[] ListOfDigitNoSeparator(string input) => input.Select(x => int.Parse(x.ToString())).ToArray();
 	public static int[] ListOfInts(string input, char separator) => input.Split(separator).Select(x => int.Parse(x)).ToArray();
+
+	public static long[] ListOfLongs(string input, char separator) => input.Split(separator).Select(x => long.Parse(x)).ToArray();
 
 	/* a range in the format of "number-number" for exemple 130254-678275*/
 	public static Vector2Int ParseRange(string input)
@@ -53,7 +56,7 @@ public static class InputParser
 				continue;
 			}
 			//else
-				//Debug.Log($"Trouvé item {parentId}");
+			//Debug.Log($"Trouvé item {parentId}");
 
 			//Debug.Log(string.Join(",", nodeDick.Select(x => x.Key).ToArray()));
 			var parent = nodeDick[parentId];

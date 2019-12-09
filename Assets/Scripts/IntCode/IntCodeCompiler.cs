@@ -8,20 +8,24 @@ public class IntCodeCompiler
 {
 
 	public Func<IntCodeProgram, IntCodeProgram>[] Instructions = new Func<IntCodeProgram, IntCodeProgram>[100];
-	public int[] InstructionsSkips = new int[] { 1, 4, 4, 2, 2, 3, 3, 4, 4 };
+	public long[] InstructionsSkips = new long[] { 1, 4, 4, 2, 2, 3, 3, 4, 4, 2 };
 
-	public int[] InputValue;
-	private int InputPointer = -1;
+	public long[] InputValue;
+	private long InputPointer = -1;
 
-	public string OutputValue = "";
+	public List<long> OutputValues = new List<long>();
+	public long OutputValue => OutputValues.Count == 0 ? 0 : long.Parse(OutputConcat);
+	public string OutputConcat => string.Join("", OutputValues.Select(x => x.ToString()));
+	public string OutputAasListIntStr => string.Join(",", OutputValues.Select(x => x.ToString()));
+
 	public bool PauseOnOutput;
 	public bool Paused;
 
 
-	public IntCodeCompiler(int inputValue, bool pauseOnOutput = false) : this(new int[] { inputValue }, pauseOnOutput)
+	public IntCodeCompiler(long inputValue, bool pauseOnOutput = false) : this(new long[] { inputValue }, pauseOnOutput)
 	{ }
 
-	public IntCodeCompiler(int[] inputValue = null, bool pauseOnOutput = false)
+	public IntCodeCompiler(long[] inputValue = null, bool pauseOnOutput = false)
 	{
 		PauseOnOutput = pauseOnOutput;
 		if (inputValue != null)
@@ -36,57 +40,56 @@ public class IntCodeCompiler
 		Instructions[6] = JumpIfFalse;
 		Instructions[7] = LessThan;
 		Instructions[8] = Equals;
+		Instructions[9] = AjustRelativeBase;
 	}
 
 
 	public void Clear()
 	{
-		OutputValue = "";
+		OutputValues.Clear();
 	}
 
-	public void SetInputs(int[] inputs)
+	public void SetInputs(long[] inputs)
 	{
 		InputValue = inputs.ToArray();
 		InputPointer = -1;
 	}
 
-	public static int[] Compute(int[] memory, int startingPointer = 0)
+	public static long[] Compute(long[] memory, long startingPointer = 0)
 	{
 		var program = new IntCodeProgram(memory, startingPointer);
 		var compiler = new IntCodeCompiler();
-		return compiler.Compute(program).Memory;
+		return compiler.Compute(program);
 	}
 
-	public static int[] ComputeStep(int[] memory, int startingPointer = 0)
+	public static long[] ComputeStep(long[] memory, long startingPointer = 0)
 	{
 		var program = new IntCodeProgram(memory, startingPointer);
 		var compiler = new IntCodeCompiler();
-		return compiler.ComputeStep(program).Memory;
+		return compiler.ComputeStep(program);
 	}
 
 
 	private IntCodeProgram Add(IntCodeProgram program)
 	{
-		var memory = program.Memory;
-		memory[program.ParameterCPosition] = program.ParameterAValue + program.ParameterBValue;
-		return new IntCodeProgram(memory, program.Pointer + 4);
+		program[program.ParameterCPointer] = program.ParameterAValue + program.ParameterBValue;
+		return new IntCodeProgram(program, program.Pointer + 4, program.RelativeBaseOffset);
 	}
 
 	private IntCodeProgram Multiply(IntCodeProgram program)
 	{
-		var memory = program.Memory;
-		memory[program.ParameterCPosition] = program.ParameterAValue * program.ParameterBValue;
-		return new IntCodeProgram(memory, program.Pointer + 4);
+		program[program.ParameterCPointer] = program.ParameterAValue * program.ParameterBValue;
+		return new IntCodeProgram(program, program.Pointer + 4, program.RelativeBaseOffset);
 	}
 
 	private IntCodeProgram Input(IntCodeProgram program)
 	{
-		int input = NextInput();
-		program.Memory[program.ParameterAPosition] = input;
-		return new IntCodeProgram(program.Memory, program.Pointer + 2);
+		var input = NextInput();
+		program[program.ParameterAPointer] = input;
+		return new IntCodeProgram(program.Memory, program.Pointer + 2, program.RelativeBaseOffset);
 	}
 
-	private int NextInput()
+	private long NextInput()
 	{
 		if (InputPointer < InputValue.Count())
 			InputPointer++;
@@ -96,42 +99,45 @@ public class IntCodeCompiler
 
 	private IntCodeProgram Output(IntCodeProgram program)
 	{
-		OutputValue += program.ParameterAValue + "";
-		if (PauseOnOutput)
-			Paused = true;
-		return new IntCodeProgram(program.Memory, program.Pointer + 2);
+		OutputValues.Add(program.ParameterAValue);
+		Paused = PauseOnOutput;
+		return new IntCodeProgram(program, program.Pointer + 2, program.RelativeBaseOffset);
 	}
 
 	private IntCodeProgram JumpIfTrue(IntCodeProgram program)
 	{
 		if (program.ParameterAValue != 0)
-			return new IntCodeProgram(program.Memory, program.ParameterBValue);
+			return new IntCodeProgram(program, program.ParameterBValue, program.RelativeBaseOffset);
 		else
-			return new IntCodeProgram(program.Memory, program.Pointer + 3);
+			return new IntCodeProgram(program, program.Pointer + 3, program.RelativeBaseOffset);
 	}
 
 	private IntCodeProgram JumpIfFalse(IntCodeProgram program)
 	{
 		if (program.ParameterAValue == 0)
-			return new IntCodeProgram(program.Memory, program.ParameterBValue);
+			return new IntCodeProgram(program, program.ParameterBValue, program.RelativeBaseOffset);
 		else
-			return new IntCodeProgram(program.Memory, program.Pointer + 3);
+			return new IntCodeProgram(program, program.Pointer + 3, program.RelativeBaseOffset);
 	}
 
 	private IntCodeProgram LessThan(IntCodeProgram program)
 	{
 		var result = (program.ParameterAValue < program.ParameterBValue) ? 1 : 0;
-		var memory = program.Memory;
-		memory[program.ParameterCPosition] = result;
-		return new IntCodeProgram(memory, program.Pointer + 4);
+		program[program.ParameterCPointer] = result;
+		return new IntCodeProgram(program, program.Pointer + 4, program.RelativeBaseOffset);
 	}
 
 	private IntCodeProgram Equals(IntCodeProgram program)
 	{
 		var result = (program.ParameterAValue == program.ParameterBValue) ? 1 : 0;
-		var memory = program.Memory;
-		memory[program.ParameterCPosition] = result;
-		return new IntCodeProgram(memory, program.Pointer + 4);
+		program[program.ParameterCPointer] = result;
+		return new IntCodeProgram(program, program.Pointer + 4, program.RelativeBaseOffset);
+	}
+
+	private IntCodeProgram AjustRelativeBase(IntCodeProgram program)
+	{
+		var newRelativeBaseOffset = program.RelativeBaseOffset + program.ParameterAValue;
+		return new IntCodeProgram(program, program.Pointer + 2, newRelativeBaseOffset);
 	}
 
 
