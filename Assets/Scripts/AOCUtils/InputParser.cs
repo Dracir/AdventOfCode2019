@@ -7,6 +7,7 @@ using System;
 public static class InputParser
 {
 	public static int[] ListOfInts(string input) => input.Split('\n').Select(x => int.Parse(x)).ToArray();
+
 	public static int[] ListOfDigitNoSeparator(string input) => input.Select(x => int.Parse(x.ToString())).ToArray();
 	public static int[] ListOfInts(string input, char separator) => input.Split(separator).Select(x => int.Parse(x)).ToArray();
 
@@ -18,6 +19,21 @@ public static class InputParser
 		var split = input.Split('-');
 		return new Vector2Int(Int32.Parse(split[0]), Int32.Parse(split[1]));
 	}
+
+
+	public static bool[,] ParseBoolGrid(string input, char separator, char trueCharacter)
+	{
+		var lines = input.Split(separator);
+		var grid = new bool[lines.Length, lines[0].Length];
+
+		for (int y = 0; y < lines.Length; y++)
+			for (int x = 0; x < lines[y].Length; x++)
+				grid[y, x] = lines[y][x] == trueCharacter;
+
+		return grid;
+	}
+
+
 
 	public static Tree ReadTree(string input, char lineSeparator, char linkSeparator)
 	{
