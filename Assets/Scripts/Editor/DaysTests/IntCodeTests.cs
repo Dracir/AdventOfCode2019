@@ -172,6 +172,7 @@ namespace Tests
 				Assert.AreEqual(false, compiler.Paused, "Should Not be paused");
 				Assert.AreEqual(1234, compiler.OutputValue, "" + compiler.OutputAasListIntStr);
 			}
+
 		}
 		public class Day9
 		{
@@ -335,7 +336,6 @@ namespace Tests
 			[Test]
 			public void Part2()
 			{
-
 				var intcode = InputParser.ListOfLongs(Day9Input, ',');
 
 				//Trop long !!
@@ -344,7 +344,7 @@ namespace Tests
 				var compiler = new IntCodeCompiler(2);
 				compiler.Compute(new IntCodeProgram(intcode, 0));
 
-				Assert.AreEqual(72852, compiler.OutputValue);
+				Assert.AreEqual(1930, compiler.OutputValue);
 			}
 		}
 	}

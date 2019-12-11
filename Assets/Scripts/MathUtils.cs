@@ -15,4 +15,22 @@ public class MathUtils
 		listOfInts.Reverse();
 		return listOfInts.ToArray();
 	}
+
+	public static BoundsInt FindBound(List<Vector2Int> points)
+	{
+		int minX = int.MaxValue;
+		int minY = int.MaxValue;
+		int maxX = int.MinValue;
+		int maxY = int.MinValue;
+
+		foreach (var pt in points)
+		{
+			minX = Mathf.Min(minX, pt.x);
+			maxX = Mathf.Max(maxX, pt.x);
+			minY = Mathf.Min(minY, pt.y);
+			maxY = Mathf.Max(maxY, pt.y);
+		}
+
+		return new BoundsInt(minX, minY, -1, maxX - minX, maxY - minY, 2);
+	}
 }

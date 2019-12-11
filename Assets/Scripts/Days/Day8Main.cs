@@ -84,16 +84,16 @@ public class Day8Main
 		return 2;
 	}
 
-	private static void ImageToTexturee(int[,] image, int w, int h, RawImage target)
+	public static void ImageToTexturee(int[,] image, int w, int h, RawImage target)
 	{
 		var texture = new Texture2D(w, h);
 
 		var colors = new Color32[w * h];
 
 		int i = 0;
-		for (int y = 5; y >=0; y--)
+		for (int y = h - 1; y >= 0; y--)
 		{
-			for (int x = 0; x < 25; x++)
+			for (int x = 0; x < w; x++)
 			{
 				var value = image[y, x];
 				if (value == 0)
