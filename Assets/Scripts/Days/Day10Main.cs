@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System;
 
 public class Day10Main
 {
@@ -76,7 +77,7 @@ public class Day10Main
 
 	public static int Part2(string inputText)
 	{
-		return Part2(inputText, 30, 30);
+		return Part2(inputText, 28, 8);
 	}
 	public static int Part2(string inputText, int vaporizorX, int vaporizorY)
 	{
@@ -84,24 +85,34 @@ public class Day10Main
 		grid[vaporizorY, vaporizorX] = false;
 		var orderGrid = AsteroidToDestructionOrderGrid(grid, new Vector2Int(vaporizorX, vaporizorY));
 
-		int max = 0;
-		int locationX = 0;
-		int locationY = 0;
+		MakeImageForGrid(orderGrid, vaporizorX, vaporizorY);
 
 		for (int y = 0; y < grid.GetLength(0); y++)
 			for (int x = 0; x < grid.GetLength(1); x++)
+				if (200 == orderGrid[y, x])
+					return x * 100 + y;
+		return 0;
+	}
+
+	private static void MakeImageForGrid(int[,] orderGrid, int vaporizorX, int vaporizorY)
+	{
+		var w = orderGrid.GetLength(1);
+		var h = orderGrid.GetLength(0);
+		var image = new Color32[h, w];
+
+		for (int x = 0; x < w; x++)
+		{
+			for (int y = 0; y < h; y++)
 			{
-				if (max < orderGrid[y, x])
-				{
-					max = orderGrid[y, x];
-					Debug.Log($"{max} at {x},{y}");
-					locationX = x;
-					locationY = y;
-				}
-
+				if (orderGrid[y, x] == 0)
+					image[y, x] = Color.black;
+				else
+					image[y, x] = Color.Lerp(Color.white, Color.red, orderGrid[y, x] / 255f);
 			}
+		}
+		image[vaporizorY, vaporizorX] = Color.green;
 
-		return locationX * 100 + locationY;
+		AOCExecutor.ActionForMain.Enqueue(() => Day8Main.ImageToTexturee(image, w, h, AOCUI.Instance.Part1ComputeOutput));
 	}
 
 	public static int[,] AsteroidToDestructionOrderGrid(bool[,] grid, Vector2Int vaporiserPosition)
@@ -111,6 +122,9 @@ public class Day10Main
 
 		var stations = new int[height, width];
 		var stationAngles = new SortedDictionary<float, SortedDictionary<float, Vector2Int>>();
+
+
+		grid[vaporiserPosition.y, vaporiserPosition.x] = false;
 
 		for (int y = 0; y < height; y++)
 			for (int x = 0; x < width; x++)
@@ -135,7 +149,10 @@ public class Day10Main
 				{
 					var nextDestroy = stationAngle.Value.First();
 					stationAngle.Value.Remove(nextDestroy.Key);
-					stations[nextDestroy.Value.y, nextDestroy.Value.x] = ++index;
+					if (stations[nextDestroy.Value.y, nextDestroy.Value.x] != 0)
+						Debug.LogError($"Deja passé par {nextDestroy.Value.x},{nextDestroy.Value.y}");
+					else
+						stations[nextDestroy.Value.y, nextDestroy.Value.x] = ++index;
 					changeOccured = true;
 				}
 			}

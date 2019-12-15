@@ -9,13 +9,13 @@ namespace Tests
 	public class Day10Tests
 	{
 		[Test]
-		public void Part1_AngleTest_DownIs180() => Assert.AreEqual(180, Day10Main.AngleBetween(0, 1, 0, 4));
+		public void Part1_AngleTest_DownIs180() => Assert.AreEqual(180, Day10Main.AngleBetween(0, 1, 0, 4), 0.001f);
 		[Test]
-		public void Part1_AngleTest_RightIs90() => Assert.AreEqual(90, Day10Main.AngleBetween(0, 1, 2, 1));
+		public void Part1_AngleTest_RightIs90() => Assert.AreEqual(90, Day10Main.AngleBetween(0, 1, 2, 1), 0.001f);
 		[Test]
-		public void Part1_AngleTest_UpIs0() => Assert.AreEqual(0, Day10Main.AngleBetween(0, 2, 0, 1));
+		public void Part1_AngleTest_UpIs0() => Assert.AreEqual(0, Day10Main.AngleBetween(0, 2, 0, 1), 0.001f);
 		[Test]
-		public void Part1_AngleTest_LeftIs207() => Assert.AreEqual(270, Day10Main.AngleBetween(2, 1, 0, 1));
+		public void Part1_AngleTest_LeftIs270() => Assert.AreEqual(270, Day10Main.AngleBetween(2, 1, 0, 1), 0.001f);
 
 
 		private static string Exemple1Grid = ".#..#\n.....\n#####\n....#\n...##";
@@ -74,7 +74,14 @@ namespace Tests
 		[Test]
 		public void Part2_Exemple1Answer()
 		{
-			Assert.AreEqual(1403, Day10Main.Part2(Part2Exemple1,8,3));
+			Assert.AreEqual(1403, Day10Main.Part2(Part2Exemple1, 8, 3));
+		}
+
+		private static string BigExemple = ".#..##.###...#######\n##.############..##.\n.#.######.########.#\n.###.#######.####.#.\n#####.##.#.##.###.##\n..#####..#.#########\n####################\n#.####....###.#.#.##\n##.#################\n#####.##.###..####..\n..######..##.#######\n####.##.####...##..#\n.#####..#.######.###\n##...#.##########...\n#.##########.#######\n.####.#.###.###.#.##\n....##.##.###..#####\n.#.#.###########.###\n#.#.#.#####.####.###\n###.##.####.##.#..##";
+		[Test]
+		public void Part2_Exemple2()
+		{
+			Assert.AreEqual(802, Day10Main.Part2(BigExemple, 11, 13));
 		}
 
 	}

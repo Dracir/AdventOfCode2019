@@ -111,6 +111,23 @@ public class Day8Main
 		target.texture = texture;
 	}
 
+	public static void ImageToTexturee(Color32[,] image, int w, int h, RawImage target)
+	{
+		var texture = new Texture2D(w, h);
+
+		var colors = new Color32[w * h];
+
+		int i = 0;
+		for (int y = h - 1; y >= 0; y--)
+			for (int x = 0; x < w; x++)
+					colors[i++] = image[y, x];
+
+		texture.filterMode = FilterMode.Point;
+		texture.SetPixels32(colors);
+		texture.Apply();
+		target.texture = texture;
+	}
+
 	public static int[,] GetImage(ImageLayer[] layers)
 	{
 		var w = layers[0].ImagePixels.GetLength(1);
