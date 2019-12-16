@@ -72,5 +72,31 @@ namespace Tests
 
 			Assert.AreEqual(179, pot);
 		}
+
+		[Test]
+		public void Part2_Exemple1()
+		{
+			var input = new (Vector3Int, Vector3Int)[] {
+				(new Vector3Int(-1, 0, 2)   ,Vector3Int.zero),
+				(new Vector3Int(2, -10, -7) ,Vector3Int.zero),
+				(new Vector3Int(4, -8, 8)   ,Vector3Int.zero),
+				(new Vector3Int(3, 5, -1)   ,Vector3Int.zero)
+			};
+
+			Assert.AreEqual(2772, Day12Main.Part2(input));
+		}
+
+		[Test]
+		public void Part2_Exemple2()
+		{
+			var input = new (Vector3Int, Vector3Int)[] {
+				(new Vector3Int(-8, -10, 0)   ,Vector3Int.zero),
+				(new Vector3Int(5, 5, 10) ,Vector3Int.zero),
+				(new Vector3Int(2, -7,3)   ,Vector3Int.zero),
+				(new Vector3Int(9, -8, -3)   ,Vector3Int.zero)
+			};
+
+			Assert.AreEqual(4686774924, Day12Main.Part2(input));
+		}
 	}
 }

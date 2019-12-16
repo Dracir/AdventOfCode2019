@@ -91,8 +91,11 @@ public class IntCodeCompiler
 
 	private long NextInput()
 	{
-		if (InputPointer < InputValue.Count())
+		if (InputValue.Count() == 0)
+			Debug.LogError("No Input ERROR");
+		else if (InputPointer < InputValue.Count())
 			InputPointer++;
+
 		var input = InputValue[InputPointer];
 		return input;
 	}

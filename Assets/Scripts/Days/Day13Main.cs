@@ -42,8 +42,64 @@ public class Day13Main
 
 	public static TileType IdToTileType(int id) => (TileType)((TileType[])Enum.GetValues(typeof(TileType)))[id];
 
-	public static string Part2(string inputText)
+	public static long Part2(string inputText)
 	{
-		return "2";
+		var intcode = InputParser.ListOfLongs(inputText, ',');
+		var compiler = new IntCodeCompiler(0, true);
+		intcode[0] = 2;
+		var program = new IntCodeProgram(intcode, 0);
+
+
+		var level = new TileType[100, 100];
+		int ballPosition = 0;
+		int paddlePosition = 0;
+		int blockRemaining = 261;
+		int maxBreak = 25000;
+		long score = 0;
+
+		while (--maxBreak > 0 && !program.IsDone && blockRemaining > 0)
+		{
+			paddlePosition = FindXOfTileTyle(TileType.Paddle, level);
+			ballPosition = FindXOfTileTyle(TileType.Ball, level);
+
+			if (paddlePosition < ballPosition)
+				compiler.SetInputs(new long[] { 1 });
+			else if (paddlePosition > ballPosition)
+				compiler.SetInputs(new long[] { -1 });
+			else
+				compiler.SetInputs(new long[] { 0 });
+
+			compiler.Clear();
+			program = compiler.Compute(program);
+			program = compiler.Compute(program);
+			program = compiler.Compute(program);
+
+			if (compiler.OutputValues[0] == -1 && compiler.OutputValues[1] == 0)
+			{
+				blockRemaining--;
+				score = compiler.OutputValues[2];
+				Debug.Log($"{blockRemaining} block remainning. Score : {score}");
+			}
+			else
+			{
+				var x = compiler.OutputValues[0];
+				var y = compiler.OutputValues[1];
+				var tileType = (int)compiler.OutputValues[2];
+				level[y, x] = IdToTileType(tileType);
+			}
+		}
+
+		Debug.Log($"maxBreak:{maxBreak},  ");
+
+		return score;
+	}
+
+	private static int FindXOfTileTyle(TileType type, TileType[,] level)
+	{
+		for (int y = 0; y < level.GetLength(0); y++)
+			for (int x = 0; x < level.GetLength(1); x++)
+				if (level[y, x] == type) return x;
+
+		return -1;
 	}
 }

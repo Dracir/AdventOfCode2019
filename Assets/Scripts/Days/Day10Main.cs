@@ -82,14 +82,13 @@ public class Day10Main
 	public static int Part2(string inputText, int vaporizorX, int vaporizorY)
 	{
 		var grid = InputParser.ParseBoolGrid(inputText.Replace("\r", ""), '\n', '#');
-		grid[vaporizorY, vaporizorX] = false;
 		var orderGrid = AsteroidToDestructionOrderGrid(grid, new Vector2Int(vaporizorX, vaporizorY));
 
 		MakeImageForGrid(orderGrid, vaporizorX, vaporizorY);
 
 		for (int y = 0; y < grid.GetLength(0); y++)
 			for (int x = 0; x < grid.GetLength(1); x++)
-				if (200 == orderGrid[y, x])
+				if (201 == orderGrid[y, x])
 					return x * 100 + y;
 		return 0;
 	}
