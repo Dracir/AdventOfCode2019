@@ -9,6 +9,7 @@ using System.Collections.Concurrent;
 public class AOCExecutor : MonoBehaviour
 {
 	public static readonly ConcurrentQueue<Action> ActionForMain = new ConcurrentQueue<Action>();
+	public static readonly ConcurrentQueue<Action> ActionForMainOnPerUpdate = new ConcurrentQueue<Action>();
 
 	Task<string> Part1Task;
 	Task<string> Part2Task;
@@ -60,6 +61,8 @@ public class AOCExecutor : MonoBehaviour
 			CreateTask(() => Day13Main.Part1(input) + "", () => Day13Main.Part2(input) + "");
 		else if (currentDay == 14)
 			CreateTask(() => Day14Main.Part1(input) + "", () => Day14Main.Part2(input) + "");
+		else if (currentDay == 15)
+			CreateTask(() => Day15Main.Part1(input) + "", () => Day15Main.Part2(input) + "");
 	}
 
 	private void CreateTask(Func<string> part1, Func<string> part2)
@@ -67,15 +70,21 @@ public class AOCExecutor : MonoBehaviour
 		Part1Task = new Task<string>(part1);
 		Part2Task = new Task<string>(part2);
 	}
-
+	private float NextUpdate = 0;
 	void Update()
 	{
 		CheckThreadedExecution();
 		Action action;
 		while (ActionForMain.TryDequeue(out action))
-		{
 			action();
-		}
+
+		/*if (Time.time > NextUpdate)
+		{
+			NextUpdate = Time.time + 0.25f;*/
+			if (ActionForMainOnPerUpdate.TryDequeue(out action))
+				action();
+		//}
+
 	}
 
 	private void CheckThreadedExecution()

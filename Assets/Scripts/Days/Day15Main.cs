@@ -6,13 +6,16 @@ using System.Linq;
 public class Day15Main
 {
 
-	public static string Part1(string inputText)
+	public static int Part1(string inputText)
 	{
-		return "1";
+		var program = new IntCodeProgram(InputParser.ListOfLongs(inputText, ','), 0, 0);
+		var robot = new RepairDroid(program);
+		robot.FindOxygenSystem();
+		return 1;
 	}
 
-	public static string Part2(string inputText)
+	public static int Part2(string inputText)
 	{
-		return "2";
+		return 2;
 	}
 }

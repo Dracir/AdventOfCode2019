@@ -49,6 +49,12 @@ public class IntCodeCompiler
 		OutputValues.Clear();
 	}
 
+	public void SetInputs(long input)
+	{
+		InputValue = new long[]{input};
+		InputPointer = -1;
+	}
+
 	public void SetInputs(long[] inputs)
 	{
 		InputValue = inputs.ToArray();
